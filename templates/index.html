@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aircraft Map</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aircraft Map</h1>
+    <div id="map"></div>
+
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([0, 0], 3);  
+
+  
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+      
+        function addAircraftToMap() {
+            fetch('/aircraft')
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(aircraft => {
+                        var marker = L.marker([aircraft.latitude, aircraft.longitude]).addTo(map);
+                        marker.bindPopup(
+                            `<b>ICAO 24:</b> ${aircraft.icao24}<br>` +
+                            `<b>Callsign:</b> ${aircraft.callsign}<br>` +
+                            `<b>Altitude:</b> ${aircraft.altitude} meters<br>` +
+                            `<b>Velocity:</b> ${aircraft.velocity} m/s`
+                        );
+                    });
+                });
+        }
+
+     
+        window.onload = function() {
+            addAircraftToMap();
+        };
+    </script>
+</body>
+</html>
